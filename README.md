@@ -11,6 +11,57 @@ Currently, two official plugins are available:
 
 The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
+---
+
+## 🚀 Guía de Ejecución
+
+Sigue estos pasos para configurar y ejecutar el proyecto localmente.
+
+### 📋 Requisitos Previos
+
+- **Node.js**: Versión 18 o superior.
+- **npm**: Versión 9 o superior.
+
+### 🛠️ Instalación
+
+Primero, clona el repositorio e instala las dependencias:
+
+```bash
+npm install
+```
+
+### 💻 Desarrollo
+
+Para iniciar el servidor de desarrollo con Hot Module Replacement (HMR):
+
+```bash
+npm run dev
+```
+
+El proyecto estará disponible en `http://localhost:5173` (o el puerto que indique la terminal).
+
+### 🏗️ Producción
+
+Si deseas generar una versión optimizada para producción:
+
+```bash
+# Construir el proyecto
+npm run build
+
+# Previsualizar la versión de producción
+npm run preview
+```
+
+### 🧹 Calidad de Código
+
+Para ejecutar el linter y verificar errores de estilo o posibles bugs:
+
+```bash
+npm run lint
+```
+
+---
+
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
