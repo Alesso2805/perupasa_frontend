@@ -46,10 +46,10 @@ const ColorSelector: React.FC<ColorSelectorProps> = ({ value, onChange, availabl
   };
 
   return (
-    <div className="p-6 bg-white border border-gray-200 mt-4 rounded-lg shadow-sm" ref={dropdownRef}>
-      <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-4">
+    <div className="flex flex-col gap-1.5" ref={dropdownRef}>
+      <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
         Selección de Color
-      </h2>
+      </label>
       
       <div className="relative">
         <div className="relative flex items-center">

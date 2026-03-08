@@ -19,5 +19,6 @@ export async function apiClient<T>(endpoint: string, options: RequestInit = {}):
     return (await response.blob()) as unknown as T;
   }
 
-  return response.json();
+  const text = await response.text();
+  return text ? JSON.parse(text) : ({} as T);
 }

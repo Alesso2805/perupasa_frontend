@@ -2,14 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Package, Layers } from 'lucide-react';
 import Input from './ui/Input';
 import Button from './ui/Button';
+import Select from './ui/Select';
 import type { Product } from '../services/productsService';
 
 interface SalesFormProps {
   onAdd: (product: Product, quantity: number, unit: string) => void;
   availableProducts: Product[];
+  priceList: 'GENERAL' | 'COPASA';
+  children?: React.ReactNode;
 }
 
-const SalesForm: React.FC<SalesFormProps> = ({ onAdd, availableProducts }) => {
+const SalesForm: React.FC<SalesFormProps> = ({ onAdd, availableProducts, priceList, children }) => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedProductId, setSelectedProductId] = useState<number | ''>('');
   const [quantity, setQuantity] = useState(1);
@@ -38,6 +41,24 @@ const SalesForm: React.FC<SalesFormProps> = ({ onAdd, availableProducts }) => {
     setSelectedProductId('');
   }, [selectedCategory]);
 
+  const getProductPrice = (product: Product): string => {
+    if (!product.precios || product.precios.length === 0) return '';
+    let priceObj = product.precios.find(p => p.tipo_lista === priceList);
+    let valor = 0;
+    
+    if (!priceObj) {
+      const otherPrice = product.precios[0];
+      if (priceList === 'GENERAL') {
+        valor = +(otherPrice.valor_soles * 1.25).toFixed(2);
+      } else {
+        valor = +(otherPrice.valor_soles / 1.25).toFixed(2);
+      }
+    } else {
+      valor = priceObj.valor_soles;
+    }
+    return ` - S/ ${valor.toFixed(2)}`;
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4 p-6 bg-white border border-gray-200 rounded-xl shadow-sm">
       <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-2">
@@ -49,35 +70,30 @@ const SalesForm: React.FC<SalesFormProps> = ({ onAdd, availableProducts }) => {
           <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
             <Layers className="w-3 h-3" /> Categoría
           </label>
-          <select 
-            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-medium text-gray-900 transition-all font-sans"
+          <Select 
             value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-          >
-            <option value="">Todas las categorías</option>
-            {categories.map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
-          </select>
+            onChange={(val) => setSelectedCategory(String(val))}
+            options={[
+              { value: '', label: 'Todas las categorías' },
+              ...categories.map(cat => ({ value: cat, label: cat }))
+            ]}
+          />
         </div>
 
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
             <Package className="w-3 h-3" /> Producto
           </label>
-          <select 
-            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-medium text-gray-900 transition-all disabled:opacity-50 font-sans"
+          <Select 
             value={selectedProductId}
-            onChange={(e) => setSelectedProductId(Number(e.target.value))}
+            onChange={(val) => setSelectedProductId(Number(val) || '')}
             disabled={!filteredProducts.length}
-          >
-            <option value="">Selecciona un producto...</option>
-            {filteredProducts.map(p => (
-              <option key={p.id} value={p.id}>
-                {p.codigo_articulo} - {p.nombre}
-              </option>
-            ))}
-          </select>
+            placeholder="Selecciona un producto..."
+            options={filteredProducts.map(p => ({
+              value: p.id,
+              label: `${p.codigo_articulo} - ${p.nombre}${getProductPrice(p)}`
+            }))}
+          />
         </div>
         
         <div className="grid grid-cols-2 gap-4">
@@ -113,12 +129,15 @@ const SalesForm: React.FC<SalesFormProps> = ({ onAdd, availableProducts }) => {
           </div>
         </div>
 
+        {children}
+
         <Button 
           type="submit" 
           variant="primary" 
           icon={Plus} 
           fullWidth
           disabled={!selectedProductId}
+          className="mt-4"
         >
           Agregar a la Guía
         </Button>

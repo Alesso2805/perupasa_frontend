@@ -3,7 +3,9 @@ import GuidePreview from './components/GuidePreview';
 import SalesForm from './components/SalesForm';
 import ColorSelector from './components/ColorSelector';
 import Button from './components/ui/Button';
-import { Plus } from 'lucide-react';
+import Input from './components/ui/Input';
+import { Plus, History } from 'lucide-react';
+import GuideHistoryModal from './components/GuideHistoryModal';
 import { productsService, type Product, type Color } from './services/productsService';
 import { salesService } from './services/salesService';
 
@@ -22,10 +24,12 @@ function App() {
 
   const [currentColor, setCurrentColor] = useState('');
   const [priceList, setPriceList] = useState<'GENERAL' | 'COPASA'>('GENERAL');
+  const [clienteNombre, setClienteNombre] = useState('CLIENTE GENERAL');
   const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
   const [availableColors, setAvailableColors] = useState<Color[]>([]);
   const [nextGuideNumber, setNextGuideNumber] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
 
   useEffect(() => {
     // Cargar productos y colores al iniciar
@@ -90,20 +94,26 @@ function App() {
       return;
     }
 
-    const cliente = prompt('Ingrese el nombre del cliente:', 'CLIENTE GENERAL');
-    if (!cliente) return;
+    if (!clienteNombre.trim()) {
+      alert('Por favor, ingresa el nombre del cliente.');
+      return;
+    }
 
     setIsSaving(true);
     try {
       const saleData = {
-        cliente,
+        cliente_nombre: clienteNombre,
         es_copasa: priceList === 'COPASA',
         items: items.map(item => ({
           productoId: item.productId,
-          colorId: item.colorId || 1, // Fallback al color por defecto si no existe
           cantidad: item.quantity,
           unidad: item.unit,
-          precioUnitario: item.price
+          colores: [
+            {
+              colorId: item.colorId || 1, // Fallback al color por defecto si no existe
+              cantidad: item.quantity
+            }
+          ]
         }))
       };
 
@@ -131,18 +141,24 @@ function App() {
       <main className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* Left Side: Controls */}
-        <div className="lg:col-span-4 flex flex-col gap-6">
+        <div className="lg:col-span-5 flex flex-col gap-6">
           <div className="mb-4">
             <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Perupasatex</h1>
             <p className="text-sm text-gray-500">Sistema de Guías v1.0</p>
           </div>
           
-          <SalesForm onAdd={handleAddItem} availableProducts={availableProducts} />
-
-          <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-4">
+          <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm flex flex-col gap-4">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-500">
               Configuración de Venta
             </h2>
+            
+            <Input
+              label="Cliente"
+              value={clienteNombre}
+              onChange={(e) => setClienteNombre(e.target.value)}
+              placeholder="Nombre del cliente"
+            />
+
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                 Lista de Precios
@@ -166,18 +182,33 @@ function App() {
               </div>
             </div>
           </div>
-          
-          <ColorSelector 
-            value={currentColor} 
-            onChange={setCurrentColor}
-            availableColors={availableColors}
-          />
+
+          <SalesForm 
+            onAdd={handleAddItem} 
+            availableProducts={availableProducts} 
+            priceList={priceList} 
+          >
+            <ColorSelector 
+              value={currentColor} 
+              onChange={setCurrentColor}
+              availableColors={availableColors}
+            />
+          </SalesForm>
           
           <div className="p-6 bg-white border border-gray-200 mt-auto">
              <div className="flex justify-between items-center mb-4">
                <span className="text-sm font-medium text-gray-700">Acciones Rápidas</span>
              </div>
              <div className="space-y-2">
+                <Button 
+                fullWidth 
+                variant="outline" 
+                size="sm"
+                icon={History}
+                onClick={() => setIsHistoryModalOpen(true)}
+               >
+                 Ver Guías Generadas
+               </Button>
                <Button 
                 fullWidth 
                 variant="outline" 
@@ -200,13 +231,18 @@ function App() {
         </div>
 
         {/* Right Side: Preview */}
-        <div className="lg:col-span-8">
+        <div className="lg:col-span-7">
           <div className="sticky top-8">
             <GuidePreview items={items} guideNumber={nextGuideNumber} />
           </div>
         </div>
 
       </main>
+
+      <GuideHistoryModal 
+        isOpen={isHistoryModalOpen} 
+        onClose={() => setIsHistoryModalOpen(false)} 
+      />
     </div>
   );
 }

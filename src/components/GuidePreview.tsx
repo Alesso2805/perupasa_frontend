@@ -98,21 +98,7 @@ const GuidePreview: React.FC<GuidePreviewProps> = ({ items, guideNumber }) => {
         </table>
       </div>
 
-      {/* Footer / Signatures */}
-      <div className="mt-12 pt-4 border-t-2 border-gray-900 grid grid-cols-2 gap-8">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-12">
-            Entregado Por
-          </p>
-          <div className="border-t border-gray-400 w-3/4"></div>
-        </div>
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-12">
-            Recibido Conforme
-          </p>
-          <div className="border-t border-gray-400 w-3/4"></div>
-        </div>
-      </div>
+
       
       <div className="mt-8 text-center text-xs text-gray-400 uppercase tracking-widest">
         Documento Generado Digitalmente

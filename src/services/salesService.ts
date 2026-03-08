@@ -1,12 +1,13 @@
 import { apiClient } from './apiClient';
 
 export interface CreateSaleDto {
-  cliente: string;
+  cliente_nombre: string;
+  es_copasa: boolean;
   items: {
     productoId: number;
-    colorId: number;
     cantidad: number;
-    precioUnitario: number;
+    unidad?: string;
+    colores: { colorId: number; cantidad: number }[];
   }[];
 }
 
@@ -23,6 +24,9 @@ export const salesService = {
   createSale: (data: CreateSaleDto) => apiClient<Sale>('/sales', {
     method: 'POST',
     body: JSON.stringify(data),
+  }),
+  deleteSale: (id: number) => apiClient<{ message: string }>(`/sales/${id}`, {
+    method: 'DELETE',
   }),
   getSalePdfUrl: (id: number) => `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/sales/${id}/pdf`,
 };
