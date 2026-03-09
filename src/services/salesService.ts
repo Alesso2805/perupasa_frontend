@@ -28,5 +28,5 @@ export const salesService = {
   deleteSale: (id: number) => apiClient<{ message: string }>(`/sales/${id}`, {
     method: 'DELETE',
   }),
-  getSalePdfUrl: (id: number) => `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/sales/${id}/pdf`,
+  getSalePdfBlob: (id: number) => apiClient<Blob>(`/sales/${id}/pdf`),
 };

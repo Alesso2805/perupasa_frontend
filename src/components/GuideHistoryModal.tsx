@@ -52,9 +52,16 @@ export default function GuideHistoryModal({ isOpen, onClose }: GuideHistoryModal
     }
   };
 
-  const handleOpenPdf = (id: number) => {
-    const pdfUrl = salesService.getSalePdfUrl(id);
-    window.open(pdfUrl, '_blank');
+  const handleOpenPdf = async (id: number) => {
+    try {
+      const blob = await salesService.getSalePdfBlob(id);
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+    } catch (error) {
+      console.error('Error al generar PDF:', error);
+      alert('Error al descargar el PDF de la guía.');
+    }
   };
 
   if (!isOpen) return null;
@@ -178,15 +185,6 @@ export default function GuideHistoryModal({ isOpen, onClose }: GuideHistoryModal
               ))}
             </div>
           )}
-        </div>
-
-        <div className="p-5 border-t border-gray-200 bg-white flex justify-between items-center rounded-b-2xl">
-          <p className="text-sm text-gray-500">
-            Mostrando {sales.length} guía{sales.length !== 1 && 's'} en total.
-          </p>
-          <Button variant="primary" onClick={onClose} className="px-6 rounded-lg font-medium">
-            Cerrar
-          </Button>
         </div>
       </div>
     </div>

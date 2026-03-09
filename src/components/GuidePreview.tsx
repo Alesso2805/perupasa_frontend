@@ -49,17 +49,17 @@ const GuidePreview: React.FC<GuidePreviewProps> = ({ items, guideNumber }) => {
       </div>
 
       {/* Table */}
-      <div className="flex-1 overflow-x-auto">
-        <table className="w-full text-left text-sm">
+      <div className="flex-1 w-full">
+        <table className="w-full text-center text-xs sm:text-sm">
           <thead>
-            <tr className="border-b border-gray-900">
-              <th className="py-2 font-semibold uppercase tracking-wider">Código</th>
-              <th className="py-2 font-semibold uppercase tracking-wider">Descripción</th>
-              <th className="py-2 font-semibold uppercase tracking-wider">Color</th>
-              <th className="py-2 font-semibold uppercase tracking-wider text-right">Cant.</th>
-              <th className="py-2 font-semibold uppercase tracking-wider text-right">Unid.</th>
-              <th className="py-2 font-semibold uppercase tracking-wider text-right text-gray-400">P. Unit.</th>
-              <th className="py-2 font-semibold uppercase tracking-wider text-right">Total</th>
+            <tr className="border-b border-gray-900 whitespace-nowrap">
+              <th className="py-2 px-2 font-semibold uppercase tracking-wider text-center">Código</th>
+              <th className="py-2 px-2 font-semibold uppercase tracking-wider text-center">Descripción</th>
+              <th className="py-2 px-2 font-semibold uppercase tracking-wider text-center">Color</th>
+              <th className="py-2 px-2 font-semibold uppercase tracking-wider text-center">Cant.</th>
+              <th className="py-2 px-2 font-semibold uppercase tracking-wider text-center">Unid.</th>
+              <th className="py-2 px-2 font-semibold uppercase tracking-wider text-center text-gray-400">P. Unit.</th>
+              <th className="py-2 px-2 font-semibold uppercase tracking-wider text-center">Total</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -71,25 +71,25 @@ const GuidePreview: React.FC<GuidePreviewProps> = ({ items, guideNumber }) => {
               </tr>
             ) : (
               items.map((item, index) => (
-                <tr key={index} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="py-3 text-gray-900 font-mono text-xs">{item.code}</td>
-                  <td className="py-3 text-gray-700 font-medium">{item.description}</td>
-                  <td className="py-3 text-gray-900">{item.color}</td>
-                  <td className="py-3 text-gray-900 text-right font-medium">{item.quantity}</td>
-                  <td className="py-3 text-gray-500 text-right text-xs uppercase">{item.unit}</td>
-                  <td className="py-3 text-gray-400 text-right text-xs">S/ {item.price.toFixed(2)}</td>
-                  <td className="py-3 text-gray-900 text-right font-bold">S/ {item.total.toFixed(2)}</td>
+                <tr key={index} className="hover:bg-gray-50/50 transition-colors whitespace-nowrap">
+                  <td className="py-3 px-2 text-gray-900 font-mono text-[11px] sm:text-xs text-center">{item.code}</td>
+                  <td className="py-3 px-2 text-gray-700 font-medium text-[11px] sm:text-xs text-center">{item.description}</td>
+                  <td className="py-3 px-2 text-gray-900 text-center">{item.color}</td>
+                  <td className="py-3 px-2 text-gray-900 text-center font-medium">{item.quantity}</td>
+                  <td className="py-3 px-2 text-gray-500 text-center uppercase">{item.unit}</td>
+                  <td className="py-3 px-2 text-gray-400 text-center">S/ {item.price.toFixed(2)}</td>
+                  <td className="py-3 px-2 text-gray-900 text-center font-bold">S/ {item.total.toFixed(2)}</td>
                 </tr>
               ))
             )}
           </tbody>
           {items.length > 0 && (
             <tfoot>
-              <tr className="border-t-2 border-gray-900">
-                <td colSpan={6} className="py-4 text-right font-bold uppercase tracking-wider text-gray-600">
+              <tr className="border-t-2 border-gray-900 whitespace-nowrap">
+                <td colSpan={6} className="py-4 px-2 text-right font-bold uppercase tracking-wider text-gray-600">
                   Total General
                 </td>
-                <td className="py-4 text-right font-black text-lg text-indigo-600">
+                <td className="py-4 px-2 text-center font-black text-base sm:text-lg text-indigo-600">
                   S/ {grandTotal.toFixed(2)}
                 </td>
               </tr>

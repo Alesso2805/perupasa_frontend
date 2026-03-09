@@ -9,7 +9,11 @@ import GuideHistoryModal from './components/GuideHistoryModal';
 import { productsService, type Product, type Color } from './services/productsService';
 import { salesService } from './services/salesService';
 
-function App() {
+interface AppProps {
+  onLogout?: () => void;
+}
+
+function App({ onLogout }: AppProps) {
   const [items, setItems] = useState<Array<{
     code: string;
     description: string;
@@ -123,9 +127,11 @@ function App() {
       // Actualizar el siguiente número de guía
       salesService.getNextNumber().then(setNextGuideNumber).catch(console.error);
       
-      // Abrir el PDF en una nueva pestaña
-      const pdfUrl = salesService.getSalePdfUrl(result.id);
-      window.open(pdfUrl, '_blank');
+      // Fetch PDF Blob and open it in new tab
+      const blob = await salesService.getSalePdfBlob(result.id);
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
       
       setItems([]); // Limpiar después de generar
     } catch (error) {
@@ -142,9 +148,19 @@ function App() {
         
         {/* Left Side: Controls */}
         <div className="lg:col-span-5 flex flex-col gap-6">
-          <div className="mb-4">
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Perupasatex</h1>
-            <p className="text-sm text-gray-500">Sistema de Guías v1.0</p>
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Perupasatex</h1>
+              <p className="text-sm text-gray-500">Sistema de Guías v1.0</p>
+            </div>
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                className="text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition-colors border border-red-100"
+              >
+                Cerrar sesión
+              </button>
+            )}
           </div>
           
           <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm flex flex-col gap-4">
@@ -195,45 +211,46 @@ function App() {
             />
           </SalesForm>
           
-          <div className="p-6 bg-white border border-gray-200 mt-auto">
-             <div className="flex justify-between items-center mb-4">
-               <span className="text-sm font-medium text-gray-700">Acciones Rápidas</span>
-             </div>
-             <div className="space-y-2">
-                <Button 
-                fullWidth 
-                variant="outline" 
-                size="sm"
-                icon={History}
-                onClick={() => setIsHistoryModalOpen(true)}
-               >
-                 Ver Guías Generadas
-               </Button>
-               <Button 
-                fullWidth 
-                variant="outline" 
-                size="sm"
-                onClick={handleNewGuide}
-               >
-                 Nueva Guía
-               </Button>
-               <Button 
-                fullWidth 
-                variant="primary" 
-                icon={Plus}
-                onClick={handleGenerateDocument}
-                disabled={isSaving}
-               >
-                 {isSaving ? 'Generando...' : 'Generar Documento'}
-               </Button>
-             </div>
-          </div>
         </div>
 
         {/* Right Side: Preview */}
         <div className="lg:col-span-7">
-          <div className="sticky top-8">
+          <div className="sticky top-8 flex flex-col gap-4">
             <GuidePreview items={items} guideNumber={nextGuideNumber} />
+            
+            <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+               <div className="flex justify-between items-center mb-4">
+                 <span className="text-sm font-medium text-gray-700">Acciones Rápidas</span>
+               </div>
+               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                 <Button 
+                  fullWidth 
+                  variant="outline" 
+                  size="sm"
+                  icon={History}
+                  onClick={() => setIsHistoryModalOpen(true)}
+                 >
+                   Ver Guías
+                 </Button>
+                 <Button 
+                  fullWidth 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleNewGuide}
+                 >
+                   Nueva Guía
+                 </Button>
+                 <Button 
+                  fullWidth 
+                  variant="primary" 
+                  icon={Plus}
+                  onClick={handleGenerateDocument}
+                  disabled={isSaving}
+                 >
+                   {isSaving ? 'Generando...' : 'Generar Documento'}
+                 </Button>
+               </div>
+            </div>
           </div>
         </div>
 
